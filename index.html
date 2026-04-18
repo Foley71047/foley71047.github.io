@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Leyuan Wang — 王乐圆 · Quantum Information</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@300;400;500&family=Noto+Serif+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   颜色 & 字体变量
+========================================================= */
+:root{
+  --bg: #0c0d12;
+  --bg-2: #12141c;
+  --bg-3: #1a1d28;
+  --ink: #f2efe6;
+  --ink-2: #e6e2d6;
+  --muted: #7e7f8a;
+  --muted-2: #9d9ea9;
+  --rule: rgba(242,239,230,.12);
+  --rule-2: rgba(242,239,230,.06);
+
+  --accent: #e8a15f;
+  --accent-2: #6fa8dc;
+  --accent-3: #c56a6a;
+
+  --f-display: "Fraunces", "Noto Serif SC", Georgia, serif;
+  --f-body: "Instrument Sans", "Noto Sans SC", -apple-system, sans-serif;
+  --f-serif: "Noto Serif SC", "Fraunces", serif;
+  --f-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+html,body{ background:var(--bg); color:var(--ink); min-height: 100vh; }
+body{
+  font-family: var(--f-body);
+  font-size: 16px;
+  line-height: 1.55;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection{ background: var(--accent); color: var(--bg); }
+a{ color: inherit; text-decoration: none; }
+
+body::before{
+  content:""; position: fixed; inset:0; pointer-events:none; z-index: 2;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.4 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.5'/></svg>");
+  opacity: .04; mix-blend-mode: overlay;
+}
+
+.qgrid{
+  position: fixed; inset:0; z-index:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(242,239,230,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(242,239,230,.025) 1px, transparent 1px);
+  background-size: 80px 80px;
+  background-position: -1px -1px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 20%, transparent 90%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 20%, transparent 90%);
+}
+.glow{
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(600px 600px at 20% 20%, rgba(232,161,95,.10), transparent 60%),
+    radial-gradient(700px 700px at 85% 70%, rgba(111,168,220,.08), transparent 65%);
+}
+
+.container{ width: min(1320px, 92%); margin: 0 auto; }
+
+/* ======== 光标 ======== */
+.cursor-dot, .cursor-ring{
+  position: fixed; top:0; left:0;
+  pointer-events:none; z-index: 9999;
+  border-radius: 50%;
+  transform: translate(-50%,-50%);
+  mix-blend-mode: difference;
+}
+.cursor-dot{ width: 6px; height:6px; background: var(--ink); transition: transform .12s ease; }
+.cursor-ring{
+  width: 34px; height: 34px;
+  border: 1px solid var(--ink);
+  transition: transform .35s cubic-bezier(.2,.8,.2,1), width .25s, height .25s, border-color .25s;
+}
+.cursor-ring.hover{ width: 68px; height: 68px; border-color: var(--accent); }
+@media (hover:none){ .cursor-dot, .cursor-ring{ display:none; } }
+
+/* ======== 导航 ======== */
+.nav{
+  position: fixed; top: 24px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  width: min(1200px, 92%);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 26px;
+  background: rgba(12,13,18,.55);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid var(--rule);
+  border-radius: 100px;
+  transition: background .3s, border-color .3s;
+}
+.nav-logo{
+  font-family: var(--f-display);
+  font-weight: 500; font-size: 18px;
+  letter-spacing: -0.01em;
+  display: flex; align-items: center; gap: 10px;
+}
+.nav-logo .mark{
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px;
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 0;
+}
+.nav-logo em{ font-style: italic; color: var(--muted-2); font-weight: 400; }
+
+.nav-links{
+  display: flex; gap: 4px;
+  background: transparent;
+  position: relative;
+}
+.nav-links a{
+  position: relative;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  padding: 10px 16px;
+  border-radius: 100px;
+  transition: color .3s;
+  z-index: 2;
+}
+.nav-links a:hover{ color: var(--ink); }
+.nav-links a.active{ color: var(--bg); }
+.nav-indicator{
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 100px;
+  transition: transform .5s cubic-bezier(.6,.15,.3,1.1), width .5s cubic-bezier(.6,.15,.3,1.1);
+  z-index: 1;
+}
+
+@media (max-width: 820px){
+  .nav{ width: 94%; padding: 12px 18px; }
+  .nav-links{ gap: 0; }
+  .nav-links a{ padding: 8px 10px; font-size: 10px; letter-spacing: .1em; }
+  .nav-logo em{ display: none; }
+}
+
+/* ======== 视图切换 ======== */
+.views{ position: relative; min-height: 100vh; }
+.view{
+  display: none;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity .8s cubic-bezier(.2,.8,.2,1), transform .8s cubic-bezier(.2,.8,.2,1);
+}
+.view.active{
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+.view.leaving{
+  display: block;
+  opacity: 0;
+  transform: translateY(-30px);
+  pointer-events: none;
+}
+
+/* ======== HERO ======== */
+.hero{
+  position: relative;
+  min-height: 100vh;
+  padding: 160px 0 80px;
+  display: flex;
+  align-items: center;
+}
+.hero-grid{
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 60px;
+  align-items: center;
+  width: 100%;
+}
+.hero-tag{
+  display: inline-flex; align-items:center; gap: 10px;
+  font-family: var(--f-mono);
+  font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--muted-2);
+  margin-bottom: 40px;
+  padding: 8px 16px;
+  border: 1px solid var(--rule);
+  border-radius: 100px;
+}
+.hero-tag .dot{
+  width:6px; height:6px; background: var(--accent);
+  border-radius:50%; animation: pulse 2.4s infinite;
+  box-shadow: 0 0 12px var(--accent);
+}
+@keyframes pulse{
+  0%,100%{ transform: scale(1); opacity: 1; }
+  50%{ transform: scale(1.6); opacity: .4; }
+}
+
+.hero-name{
+  font-family: var(--f-display);
+  font-weight: 300;
+  font-size: clamp(56px, 10vw, 148px);
+  line-height: .9;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  font-variation-settings: "opsz" 144;
+}
+.hero-name .italic{ font-style: italic; font-weight: 300; color: var(--accent); }
+.hero-name .zh{
+  display: block;
+  font-family: var(--f-serif);
+  font-weight: 300;
+  font-size: .48em;
+  color: var(--muted-2);
+  letter-spacing: .15em;
+  margin-bottom: 12px;
+}
+
+.hero-bio{
+  margin-top: 44px;
+  font-family: var(--f-display);
+  font-weight: 300;
+  font-size: clamp(18px, 1.8vw, 22px);
+  line-height: 1.55;
+  max-width: 620px;
+  color: var(--ink-2);
+  letter-spacing: -0.005em;
+}
+.hero-bio .italic{ color: var(--accent); font-style: italic; }
+.hero-bio .quantum-term{
+  color: var(--accent-2);
+  font-style: italic;
+  border-bottom: 1px dashed var(--accent-2);
+  padding-bottom: 1px;
+  transition: all .3s;
+  cursor: help;
+}
+.hero-bio .quantum-term:hover{ color: var(--accent); border-color: var(--accent); }
+
+.hero-meta{
+  margin-top: 52px;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 36px;
+  padding-top: 32px;
+  border-top: 1px solid var(--rule);
+  font-family: var(--f-mono);
+  font-size: 12px;
+  color: var(--ink-2);
+}
+.hero-meta .m-label{
+  display:block; color: var(--muted); font-size: 10px;
+  letter-spacing: .22em; text-transform: uppercase; margin-bottom: 8px;
+}
+
+.hero-cta{ margin-top: 44px; display: flex; gap: 16px; flex-wrap: wrap; }
+.btn{
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 26px;
+  border-radius: 100px;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  transition: all .3s cubic-bezier(.2,.8,.2,1);
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: none;
+  color: inherit;
+}
+.btn-primary{ background: var(--accent); color: var(--bg); }
+.btn-primary:hover{ background: var(--ink); transform: translateY(-2px); }
+.btn-secondary{ border-color: var(--rule); color: var(--ink); }
+.btn-secondary:hover{ border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+.btn .arrow{ display: inline-block; transition: transform .3s; }
+.btn:hover .arrow{ transform: translateX(4px); }
+
+/* ===== 右侧肖像 ===== */
+.hero-right{ position: relative; display: flex; justify-content: center; }
+.portrait-wrap{
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  aspect-ratio: 3/4;
+}
+.portrait-orbit{
+  position: absolute; inset: -30px;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  animation: spin 60s linear infinite;
+}
+.portrait-orbit::before, .portrait-orbit::after{
+  content:"";
+  position: absolute;
+  width: 8px; height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 15px var(--accent);
+}
+.portrait-orbit::before{ top: -4px; left: 50%; transform: translateX(-50%); }
+.portrait-orbit::after{ bottom: -4px; left: 50%; transform: translateX(-50%); background: var(--accent-2); box-shadow: 0 0 15px var(--accent-2); }
+@keyframes spin{ to{ transform: rotate(360deg); } }
+
+.portrait-frame{
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 6px;
+  box-shadow:
+    0 40px 100px -20px rgba(0,0,0,.6),
+    0 0 0 1px rgba(232,161,95,.15);
+  transform: perspective(1000px) rotateY(-4deg) rotateX(2deg);
+  transition: transform .8s cubic-bezier(.2,.8,.2,1);
+}
+.portrait-frame:hover{ transform: perspective(1000px) rotateY(0) rotateX(0); }
+.portrait-frame img{
+  width:100%; height:100%; object-fit: cover;
+  filter: contrast(1.02) saturate(.95) brightness(.95);
+  transition: filter .8s, transform 1s;
+}
+.portrait-frame:hover img{
+  filter: contrast(1.05) saturate(1.1) brightness(1);
+  transform: scale(1.05);
+}
+
+.portrait-label{
+  position: absolute;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+}
+.portrait-label.tl{ top: -50px; left: 0; }
+.portrait-label.br{ bottom: -42px; right: 0; text-align: right; }
+.portrait-label .v{
+  display: block; color: var(--accent); font-family: var(--f-display);
+  font-style: italic; font-size: 20px; letter-spacing: 0;
+  font-weight: 400; margin-top: 4px;
+}
+.ket{
+  position: absolute;
+  bottom: -70px; left: -30px;
+  font-family: var(--f-display);
+  font-style: italic;
+  font-size: 80px;
+  font-weight: 300;
+  color: var(--accent);
+  opacity: .9;
+  line-height: 1;
+  font-variation-settings: "opsz" 144;
+}
+.ket sub{ font-size: .35em; color: var(--muted-2); }
+
+@media (max-width: 960px){
+  .hero-grid{ grid-template-columns: 1fr; gap: 80px; }
+  .hero-right{ order: -1; }
+  .portrait-wrap{ max-width: 300px; }
+  .ket{ font-size: 60px; bottom: -50px; }
+  .hero-meta{ grid-template-columns: 1fr 1fr; gap: 20px; }
+  .portrait-label.tl, .portrait-label.br{ display: none; }
+}
+
+/* ======== 通用 PAGE ======== */
+.page{ padding: 160px 0 120px; min-height: 100vh; }
+.page-header{
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 40px;
+  margin-bottom: 80px;
+  align-items: end;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--rule);
+}
+.page-num{
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: .22em;
+  color: var(--muted);
+  padding-bottom: 8px;
+}
+.page-num::before{
+  content:""; display: block; width: 40px; height: 1px;
+  background: var(--accent); margin-bottom: 24px;
+}
+.page-title{
+  font-family: var(--f-display);
+  font-weight: 300;
+  font-size: clamp(44px, 8vw, 104px);
+  line-height: .9;
+  letter-spacing: -0.035em;
+  font-variation-settings: "opsz" 144;
+}
+.page-title .italic{ font-style: italic; color: var(--accent); }
+.page-sub{
+  font-family: var(--f-serif);
+  font-size: 16px;
+  color: var(--muted-2);
+  max-width: 620px;
+  margin-top: 20px;
+  line-height: 1.7;
+}
+@media (max-width: 720px){
+  .page-header{ grid-template-columns: 1fr; gap: 18px; }
+  .page{ padding: 130px 0 80px; }
+}
+
+/* ======== RESEARCH ======== */
+.research-intro{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  margin-bottom: 100px;
+  padding: 40px;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(232,161,95,.03), transparent);
+}
+.research-intro h3{
+  font-family: var(--f-display);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.3;
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+.research-intro h3 .italic{ font-style: italic; color: var(--accent); }
+.research-intro p{
+  font-family: var(--f-serif);
+  color: var(--ink-2);
+  line-height: 1.8;
+  font-size: 15px;
+}
+.research-intro .keywords{
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-top: 20px;
+}
+.research-intro .keywords span{
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 100px;
+  color: var(--accent);
+  background: rgba(232,161,95,.05);
+}
+@media (max-width: 820px){
+  .research-intro{ grid-template-columns: 1fr; gap: 30px; padding: 28px; }
+}
+
+.project{
+  display: grid;
+  grid-template-columns: 80px 1fr 260px;
+  gap: 40px;
+  padding: 56px 40px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  position: relative;
+  background: var(--bg-2);
+  transition: all .5s cubic-bezier(.2,.8,.2,1);
+  overflow: hidden;
+}
+.project::before{
+  content:""; position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 0%;
+  background: var(--accent);
+  transition: height .6s cubic-bezier(.2,.8,.2,1);
+}
+.project:hover{
+  transform: translateX(4px);
+  border-color: rgba(232,161,95,.35);
+  background: rgba(26,29,40,.7);
+}
+.project:hover::before{ height: 100%; }
+.project.featured{
+  border-color: rgba(232,161,95,.25);
+  background: linear-gradient(135deg, rgba(232,161,95,.04), var(--bg-2));
+}
+.project.featured::before{ height: 100%; }
+.project-idx{
+  font-family: var(--f-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 72px;
+  line-height: 1;
+  color: var(--accent);
+  font-variation-settings: "opsz" 144;
+}
+.project-body h3{
+  font-family: var(--f-display);
+  font-weight: 400;
+  font-size: clamp(22px, 2.4vw, 30px);
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  margin-bottom: 12px;
+  color: var(--ink);
+}
+.project-body h3 .italic{ font-style: italic; color: var(--accent); }
+.project-org{
+  font-family: var(--f-display);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--muted-2);
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+.project-org .pin{ color: var(--accent-2); font-style: normal; margin-right: 4px; }
+.project-body ul{ list-style: none; display: grid; gap: 10px; margin-top: 14px; }
+.project-body li{
+  font-family: var(--f-serif);
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink-2);
+  padding-left: 22px;
+  position: relative;
+}
+.project-body li::before{
+  content:"→";
+  position: absolute; left: 0; top: 0;
+  color: var(--accent);
+  font-family: var(--f-mono);
+}
+.project-body .tags{ margin-top: 20px; display: flex; flex-wrap: wrap; gap: 6px; }
+.project-body .tags span{
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: .1em;
+  padding: 3px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 100px;
+  color: var(--muted-2);
+}
+.project-side{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-left: 1px solid var(--rule);
+  padding-left: 32px;
+  justify-content: flex-start;
+}
+.project-side .side-row{
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--ink-2);
+  letter-spacing: .08em;
+}
+.project-side .side-label{
+  display: block;
+  font-size: 9px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .22em;
+  margin-bottom: 6px;
+}
+.project-side .status{
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  width: fit-content;
+}
+.project-side .status.ongoing{ background: rgba(232,161,95,.12); color: var(--accent); }
+.project-side .status.ongoing::before{
+  content:""; width: 6px; height: 6px;
+  background: var(--accent); border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+.project-side .status.done{ background: rgba(111,168,220,.12); color: var(--accent-2); }
+.project-side .status.done::before{ content:"✓"; font-size: 11px; }
+
+@media (max-width: 960px){
+  .project{ grid-template-columns: 1fr; gap: 24px; padding: 32px 24px; }
+  .project-side{ border-left: none; padding-left: 0; border-top: 1px solid var(--rule); padding-top: 24px; flex-direction: row; flex-wrap: wrap; gap: 20px 32px; }
+  .project-idx{ font-size: 48px; }
+}
+
+/* ======== EDUCATION ======== */
+.edu-card{
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 60px;
+  padding: 60px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.edu-head h3{
+  font-family: var(--f-display);
+  font-weight: 300;
+  font-size: clamp(36px, 5vw, 56px);
+  line-height: 1;
+  letter-spacing: -0.025em;
+  margin-bottom: 12px;
+  font-variation-settings: "opsz" 144;
+}
+.edu-head h3 .italic{ font-style: italic; color: var(--accent); }
+.edu-head .edu-zh{
+  font-family: var(--f-serif);
+  color: var(--muted-2);
+  font-size: 18px;
+  margin-bottom: 28px;
+}
+.edu-head .edu-dates{
+  font-family: var(--f-mono);
+  font-size: 12px;
+  letter-spacing: .14em;
+  color: var(--ink-2);
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  display: inline-block;
+  padding-right: 80px;
+}
+.edu-body{ display: grid; gap: 24px; }
+.edu-item{
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.edu-item .lbl{
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 6px;
+}
+.edu-item .val{
+  font-family: var(--f-serif);
+  font-size: 15px;
+  color: var(--ink-2);
+  line-height: 1.7;
+}
+.edu-item .val.big{
+  font-family: var(--f-display);
+  font-style: italic;
+  font-size: 38px;
+  color: var(--accent);
+  line-height: 1;
+  font-weight: 400;
+}
+.edu-item .val.big small{
+  color: var(--muted-2);
+  font-size: 16px;
+  font-style: normal;
+  font-family: var(--f-mono);
+  margin-left: 4px;
+}
+.edu-item .val .course{
+  display: inline-block;
+  padding: 4px 10px;
+  margin: 3px 3px 3px 0;
+  border: 1px solid var(--rule);
+  border-radius: 100px;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--ink-2);
+  transition: all .3s;
+}
+.edu-item .val .course:hover{
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(232,161,95,.05);
+}
+.edu-item .val .course.key{
+  border-color: rgba(232,161,95,.3);
+  color: var(--accent);
+  background: rgba(232,161,95,.05);
+}
+@media (max-width: 820px){
+  .edu-card{ grid-template-columns: 1fr; gap: 32px; }
+  .edu-item{ grid-template-columns: 1fr; gap: 6px; }
+}
+
+.transcript-preview{
+  margin-top: 80px;
+  padding: 40px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--bg-2);
+}
+.transcript-preview h4{
+  font-family: var(--f-display);
+  font-weight: 400;
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+.transcript-preview h4 .italic{ font-style: italic; color: var(--accent); }
+.transcript-preview .tp-sub{
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: .16em;
+  color: var(--muted);
+  margin-bottom: 30px;
+}
+.tp-grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+}
+.tp-cell{
+  background: var(--bg-2);
+  padding: 20px;
+  transition: background .3s;
+  position: relative;
+}
+.tp-cell:hover{ background: var(--bg-3); }
+.tp-cell .course-name{
+  font-family: var(--f-display);
+  font-size: 15px;
+  color: var(--ink);
+  margin-bottom: 6px;
+  font-weight: 400;
+  line-height: 1.3;
+  padding-right: 40px;
+}
+.tp-cell .course-meta{
+  font-family: var(--f-mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.tp-cell .course-grade{
+  position: absolute;
+  top: 18px; right: 20px;
+  font-family: var(--f-display);
+  font-style: italic;
+  color: var(--accent);
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 400;
+  font-variation-settings: "opsz" 144;
+}
+.tp-cell .course-grade.high{ color: var(--accent); }
+.tp-cell .course-grade.mid{ color: var(--muted-2); }
+@media (max-width: 720px){ .tp-grid{ grid-template-columns: 1fr; } }
+
+/* ======== HONORS ======== */
+.honors-grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--rule);
+  border-left: 1px solid var(--rule);
+}
+.honor{
+  padding: 52px 40px;
+  border-right: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  position: relative;
+  overflow: hidden;
+  transition: background .4s;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 260px;
+}
+.honor::before{
+  content:"";
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 0; height: 2px;
+  background: var(--accent);
+  transition: width .8s cubic-bezier(.2,.8,.2,1);
+}
+.honor:hover::before{ width: 100%; }
+.honor:hover{ background: rgba(232,161,95,.03); }
+.honor .h-year{
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: .22em;
+  color: var(--muted);
+}
+.honor h4{
+  font-family: var(--f-display);
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  margin-bottom: 8px;
+  font-variation-settings: "opsz" 144;
+}
+.honor h4 .italic{ font-style: italic; color: var(--accent); }
+.honor .h-zh{
+  font-family: var(--f-serif);
+  font-size: 14px;
+  color: var(--muted-2);
+  line-height: 1.6;
+}
+.honor .h-tags{
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.honor .h-tag{
+  padding: 5px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 100px;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: .14em;
+  color: var(--ink-2);
+  text-transform: uppercase;
+}
+.honor .h-tag.gold{
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+.honor .h-tag.amount{
+  color: var(--accent);
+  border-color: rgba(232,161,95,.3);
+}
+.honor .h-index{
+  position: absolute;
+  top: 24px; right: 28px;
+  font-family: var(--f-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 20px;
+  color: var(--muted);
+  opacity: .5;
+}
+@media (max-width: 960px){
+  .honors-grid{ grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 720px){
+  .honors-grid{ grid-template-columns: 1fr; }
+  .honor{ padding: 36px 24px; min-height: auto; }
+}
+
+/* ======== SKILLS ======== */
+.skills-layout{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 40px;
+}
+.skill-block{
+  padding: 44px 36px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--bg-2);
+  position: relative;
+  overflow: hidden;
+  transition: all .5s;
+}
+.skill-block:hover{
+  border-color: rgba(232,161,95,.25);
+  transform: translateY(-4px);
+}
+.skill-block .sk-num{
+  position: absolute;
+  top: 20px; right: 28px;
+  font-family: var(--f-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 32px;
+  color: var(--accent);
+  opacity: .7;
+  font-variation-settings: "opsz" 144;
+}
+.skill-block h4{
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--rule);
+}
+.skill-block ul{ list-style: none; display: grid; gap: 4px; }
+.skill-block li{
+  font-family: var(--f-display);
+  font-weight: 400;
+  font-size: clamp(20px, 2vw, 26px);
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+  padding: 10px 0;
+  border-bottom: 1px dashed transparent;
+  transition: all .25s;
+  font-variation-settings: "opsz" 144;
+}
+.skill-block li:hover{
+  color: var(--accent);
+  font-style: italic;
+  padding-left: 10px;
+}
+.skill-block li .sub{
+  display: inline-block;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--muted);
+  margin-left: 8px;
+  font-style: normal;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+@media (max-width: 820px){ .skills-layout{ grid-template-columns: 1fr; gap: 20px; } }
+
+/* ======== CONTACT ======== */
+.contact-big{
+  font-family: var(--f-display);
+  font-weight: 300;
+  font-size: clamp(46px, 9vw, 140px);
+  line-height: .95;
+  letter-spacing: -0.035em;
+  margin-bottom: 60px;
+  font-variation-settings: "opsz" 144;
+}
+.contact-big .italic{ font-style: italic; color: var(--accent); }
+.contact-big a{
+  position: relative;
+  display: inline-block;
+  transition: color .3s;
+}
+.contact-big a::after{
+  content:"";
+  position: absolute; left:0; bottom: 8%;
+  width: 100%; height: 2px;
+  background: var(--ink);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .6s cubic-bezier(.2,.8,.2,1);
+}
+.contact-big a:hover{ color: var(--accent); }
+.contact-big a:hover::after{ transform: scaleX(1); background: var(--accent); }
+
+.quote-attr{
+  display: flex;
+  gap: 20px;
+  margin-top: -30px;
+  margin-bottom: 60px;
+  padding-left: 8px;
+  align-items: baseline;
+}
+.quote-attr .qa-dash{
+  font-family: var(--f-display);
+  font-weight: 300;
+  font-size: 32px;
+  color: var(--accent);
+  line-height: 1;
+}
+.quote-attr .qa-body{
+  font-family: var(--f-display);
+  font-size: clamp(14px, 1.4vw, 17px);
+  color: var(--muted-2);
+  letter-spacing: .01em;
+  line-height: 1.5;
+}
+.quote-attr strong{
+  color: var(--ink);
+  font-weight: 500;
+  font-style: normal;
+  letter-spacing: -0.005em;
+}
+.quote-attr em{
+  font-style: italic;
+  color: var(--muted-2);
+}
+
+.contact-grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--rule);
+  margin-top: 60px;
+}
+.contact-item{
+  padding: 36px 0;
+  padding-right: 30px;
+  border-right: 1px solid var(--rule);
+}
+.contact-item:last-child{ border-right: none; padding-right: 0; padding-left: 30px; }
+.contact-item:not(:first-child){ padding-left: 30px; }
+.contact-item .c-label{
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.contact-item .c-value{
+  font-family: var(--f-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 22px;
+  color: var(--ink);
+  line-height: 1.2;
+  font-variation-settings: "opsz" 144;
+  transition: color .3s;
+}
+.contact-item .c-value:hover{ color: var(--accent); }
+
+.contact-advisor{
+  margin-top: 100px;
+  padding: 40px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--bg-2);
+}
+.contact-advisor .ca-label{
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.contact-advisor .ca-name{
+  font-family: var(--f-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 32px;
+  color: var(--accent);
+  letter-spacing: -0.01em;
+  font-variation-settings: "opsz" 144;
+}
+.contact-advisor .ca-role{
+  font-family: var(--f-serif);
+  color: var(--muted-2);
+  margin-top: 8px;
+  font-size: 14px;
+}
+@media (max-width: 820px){
+  .contact-grid{ grid-template-columns: 1fr; }
+  .contact-item{ border-right: none; border-bottom: 1px solid var(--rule); padding: 24px 0 !important; }
+  .contact-item:last-child{ border-bottom: none; }
+  .contact-advisor{ padding: 28px; }
+}
+
+footer{
+  border-top: 1px solid var(--rule);
+  padding: 40px 0;
+  margin-top: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: .12em;
+  color: var(--muted);
+}
+footer .ft-logo{
+  font-family: var(--f-display);
+  font-style: italic;
+  font-size: 16px;
+  color: var(--ink-2);
+  font-weight: 400;
+}
+@media (max-width: 720px){ footer{ flex-direction: column; gap: 16px; text-align: center; } }
+
+/* ======== 动画 ======== */
+.reveal{
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity .9s cubic-bezier(.2,.8,.2,1), transform .9s cubic-bezier(.2,.8,.2,1);
+}
+.reveal.in{ opacity: 1; transform: translateY(0); }
+.reveal.d1{ transition-delay: .1s; }
+.reveal.d2{ transition-delay: .2s; }
+.reveal.d3{ transition-delay: .3s; }
+
+@keyframes riseIn {
+  from{ opacity: 0; transform: translateY(50px); }
+  to{ opacity: 1; transform: translateY(0); }
+}
+.view.active .anim-1{ opacity: 0; animation: riseIn 1s .15s forwards cubic-bezier(.2,.8,.2,1); }
+.view.active .anim-2{ opacity: 0; animation: riseIn 1.1s .3s forwards cubic-bezier(.2,.8,.2,1); }
+.view.active .anim-3{ opacity: 0; animation: riseIn 1.1s .45s forwards cubic-bezier(.2,.8,.2,1); }
+.view.active .anim-4{ opacity: 0; animation: riseIn 1s .6s forwards cubic-bezier(.2,.8,.2,1); }
+.view.active .anim-5{ opacity: 0; animation: riseIn 1s .75s forwards cubic-bezier(.2,.8,.2,1); }
+.view.active .anim-6{ opacity: 0; animation: riseIn 1s .9s forwards cubic-bezier(.2,.8,.2,1); }
+.view.active .anim-right{ opacity: 0; animation: riseIn 1.3s .4s forwards cubic-bezier(.2,.8,.2,1); }
+
+.progress{
+  position: fixed; top:0; left: 0;
+  height: 2px; width: 0;
+  background: var(--accent);
+  z-index: 100;
+  transition: width .1s;
+}
+</style>
+</head>
+<body>
+
+<div class="qgrid"></div>
+<div class="glow"></div>
+
+<div class="cursor-ring" id="cRing"></div>
+<div class="cursor-dot" id="cDot"></div>
+
+<div class="progress" id="progress"></div>
+
+<!-- 导航 -->
+<nav class="nav" id="nav">
+  <a href="#home" class="nav-logo" data-nav="home">
+    <span class="mark">LW</span>
+    <em>Leyuan Wang</em>
+  </a>
+  <div class="nav-links" id="navLinks">
+    <span class="nav-indicator" id="navInd"></span>
+    <a href="#home" data-nav="home" class="active">Home</a>
+    <a href="#research" data-nav="research">Research</a>
+    <a href="#education" data-nav="education">Education</a>
+    <a href="#honors" data-nav="honors">Honors</a>
+    <a href="#skills" data-nav="skills">Skills</a>
+    <a href="#contact" data-nav="contact">Contact</a>
+  </div>
+</nav>
+
+<main class="views" id="views">
+
+  <!-- ============ HOME ============ -->
+  <section class="view active" id="view-home">
+    <div class="container hero">
+      <div class="hero-grid">
+        <div>
+          <div class="hero-tag anim-1"><span class="dot"></span>Quantum Information · Undergraduate Researcher</div>
+
+          <h1 class="hero-name">
+            <span class="zh anim-2">王乐圆</span>
+            <span class="anim-2">Leyuan</span><br/>
+            <span class="italic anim-3">Wang</span>.
+          </h1>
+
+          <p class="hero-bio anim-4">
+            我是南开大学物理学院<span class="italic">强基计划</span>在读本科生，
+            研究兴趣聚焦于 <span class="quantum-term">量子信息理论</span>，
+            尤其是 <span class="quantum-term">Bell 非定域性</span> 与
+            <span class="quantum-term">线性光学网络下的量子测量</span>——
+            在纠缠、因果结构与可观测量之间寻找更严格的不等式与更清晰的边界。
+          </p>
+
+          <div class="hero-meta anim-5">
+            <div>
+              <span class="m-label">Program</span>
+              B.Sc. Physics · <br/>Fundamental Disciplines
+            </div>
+            <div>
+              <span class="m-label">Affiliation</span>
+              Nankai University · <br/>School of Physics
+            </div>
+            <div>
+              <span class="m-label">Based in</span>
+              Tianjin, CN · <br/>Class of 2027
+            </div>
+          </div>
+
+          <div class="hero-cta anim-6">
+            <a href="#research" class="btn btn-primary" data-nav="research">
+              View Research <span class="arrow">→</span>
+            </a>
+            <a href="mailto:2310297@mail.nankai.edu.cn" class="btn btn-secondary">
+              Get in Touch <span class="arrow">↗</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-right anim-right">
+          <div class="portrait-wrap">
+            <div class="portrait-orbit"></div>
+            <div class="portrait-label tl">
+              Portrait / 2024
+              <span class="v">N°01</span>
+            </div>
+            <figure class="portrait-frame" id="portrait">
+              <img src="portrait_web.jpg" alt="Leyuan Wang portrait" />
+            </figure>
+            <div class="portrait-label br">
+              Physics · Quantum Info
+              <span class="v">王乐圆</span>
+            </div>
+            <div class="ket">|ψ⟩<sub>LW</sub></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESEARCH ============ -->
+  <section class="view" id="view-research">
+    <div class="container page">
+      <div class="page-header">
+        <div class="page-num anim-1">§ 01 / Research</div>
+        <h2 class="page-title anim-2"><span class="italic">Research</span><br/>&amp; Projects.</h2>
+      </div>
+
+      <div class="research-intro anim-3">
+        <div>
+          <h3>Focus: <span class="italic">Bell nonlocality</span> &amp; linear-optical measurements.</h3>
+          <p>
+            我目前的研究集中在量子信息理论的两个方向——通过多方纠缠交换网络中的 Bell 型不等式考察实数量子理论与标准复数理论的可区分性，以及使用线性光学干涉网络来表征一般的 POVM 测量。
+          </p>
+        </div>
+        <div>
+          <div style="font-family: var(--f-mono); font-size: 10px; letter-spacing: .22em; color: var(--muted); margin-bottom: 20px; text-transform: uppercase;">Research Interests</div>
+          <div class="keywords">
+            <span>Quantum Information Theory</span>
+            <span>Bell Nonlocality</span>
+            <span>Entanglement-Swapping Networks</span>
+            <span>Linear Optical Networks</span>
+            <span>POVM Characterization</span>
+            <span>Numerical Optimization</span>
+          </div>
+        </div>
+      </div>
+
+      <article class="project featured reveal">
+        <div class="project-idx">01</div>
+        <div class="project-body">
+          <h3>Ruling out <span class="italic">real quantum theories</span> in multi-party entanglement-swapping networks</h3>
+          <div class="project-org">
+            <span class="pin">◆</span>Shenzhen International Quantum Academy · Independent Research Project
+          </div>
+          <div style="font-family: var(--f-serif); color: var(--muted-2); font-size: 14px; margin-bottom: 20px; line-height: 1.7;">
+            在具有因果独立源的多方纠缠交换量子网络中排除实数量子理论的方案研究
+          </div>
+          <ul>
+            <li>独立研究利用多方纠缠交换量子网络排除实数量子理论的理论方案</li>
+            <li>分析因果独立源假设下的 Bell 型不等式，推导其量子违背条件</li>
+            <li>使用 Python 进行数值优化，探索可实现的量子违背界</li>
+          </ul>
+          <div class="tags">
+            <span>Quantum Networks</span>
+            <span>Bell Inequality</span>
+            <span>Real vs Complex QM</span>
+            <span>Python · Numerical Opt.</span>
+          </div>
+        </div>
+        <div class="project-side">
+          <div class="side-row">
+            <span class="side-label">Period</span>
+            Jul 2025 → Sep 2025
+          </div>
+          <div class="side-row">
+            <span class="side-label">Location</span>
+            Shenzhen, CN
+          </div>
+          <div class="side-row">
+            <span class="side-label">Role</span>
+            Independent Researcher
+          </div>
+          <div class="status done">Concluded</div>
+        </div>
+      </article>
+
+      <article class="project featured reveal">
+        <div class="project-idx">02</div>
+        <div class="project-body">
+          <h3>Characterization of <span class="italic">POVMs</span> via linear optical networks</h3>
+          <div class="project-org">
+            <span class="pin">◆</span>Nankai University · Independent Research Project
+          </div>
+          <div style="font-family: var(--f-serif); color: var(--muted-2); font-size: 14px; margin-bottom: 20px; line-height: 1.7;">
+            线性光学网络下 POVM 的表征方法研究
+          </div>
+          <ul>
+            <li>研究基于线性光学干涉网络的一般测量 (POVM) 表征方法</li>
+            <li>分析干涉网络变换矩阵与多光子测量算符之间的对应关系</li>
+            <li>建立从实验可实现变换到抽象测量算符的映射关系</li>
+          </ul>
+          <div class="tags">
+            <span>Linear Optics</span>
+            <span>POVM</span>
+            <span>Interferometer Networks</span>
+            <span>Multi-photon Measurement</span>
+          </div>
+        </div>
+        <div class="project-side">
+          <div class="side-row">
+            <span class="side-label">Period</span>
+            Nov 2025 → Present
+          </div>
+          <div class="side-row">
+            <span class="side-label">Location</span>
+            Nankai, Tianjin
+          </div>
+          <div class="side-row">
+            <span class="side-label">Role</span>
+            Independent Researcher
+          </div>
+          <div class="status ongoing">On-going</div>
+        </div>
+      </article>
+
+      <article class="project reveal">
+        <div class="project-idx">03</div>
+        <div class="project-body">
+          <h3>Thermoacoustic Engine <span class="italic">Experimental Apparatus</span></h3>
+          <div class="project-org">
+            <span class="pin">◆</span>CUPEC National Physics Experimental Competition · Nankai University
+          </div>
+          <div style="font-family: var(--f-serif); color: var(--muted-2); font-size: 14px; margin-bottom: 20px; line-height: 1.7;">
+            热声发动机实验教学装置研究
+          </div>
+          <ul>
+            <li>设计声学信号采集与放大电路，负责麦克风模块的搭建与调试</li>
+            <li>优化谐振腔结构，提升系统声场稳定性与教学演示效果</li>
+            <li>协同团队完成装置优化、文档撰写与现场答辩展示</li>
+          </ul>
+          <div class="tags">
+            <span>Thermoacoustics</span>
+            <span>Signal Processing</span>
+            <span>Circuit Design</span>
+            <span>Resonator Optimization</span>
+          </div>
+        </div>
+        <div class="project-side">
+          <div class="side-row">
+            <span class="side-label">Period</span>
+            Mar 2024 → Oct 2024
+          </div>
+          <div class="side-row">
+            <span class="side-label">Award</span>
+            <span style="color: var(--accent); font-weight: 500;">★ National First Prize</span>
+          </div>
+          <div class="side-row">
+            <span class="side-label">Role</span>
+            Team Member
+          </div>
+          <div class="status done">Concluded</div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ EDUCATION ============ -->
+  <section class="view" id="view-education">
+    <div class="container page">
+      <div class="page-header">
+        <div class="page-num anim-1">§ 02 / Education</div>
+        <h2 class="page-title anim-2"><span class="italic">Academic</span><br/>Training.</h2>
+      </div>
+
+      <div class="edu-card anim-3">
+        <div class="edu-head">
+          <h3>Nankai <span class="italic">University</span></h3>
+          <div class="edu-zh">南开大学 · 物理学院</div>
+          <div class="edu-dates">Sep 2023 → Jun 2027 (expected)</div>
+        </div>
+        <div class="edu-body">
+          <div class="edu-item">
+            <span class="lbl">Degree</span>
+            <span class="val">B.Sc. in Physics<br/><em style="color:var(--muted);font-style:italic;">Fundamental Disciplines Program · 强基计划</em></span>
+          </div>
+          <div class="edu-item">
+            <span class="lbl">GPA</span>
+            <span class="val big">3.443<small> / 4.00</small></span>
+          </div>
+          <div class="edu-item">
+            <span class="lbl">Advisor</span>
+            <span class="val">Prof. <em style="font-style:italic;color:var(--accent);">Yali Mao</em> · 毛亚丽 教授</span>
+          </div>
+          <div class="edu-item">
+            <span class="lbl">Credits</span>
+            <span class="val">133.0 <small style="color:var(--muted);font-family:var(--f-mono);font-size:11px;">· earned as of 2026 · ongoing</small></span>
+          </div>
+          <div class="edu-item">
+            <span class="lbl">Coursework</span>
+            <span class="val">
+              <span class="course key">Quantum Mechanics</span>
+              <span class="course key">Foundations of Quantum Information</span>
+              <span class="course key">Linear Algebra</span>
+              <span class="course key">Math. Methods in Physics</span>
+              <span class="course">Electrodynamics</span>
+              <span class="course">Theoretical Mechanics</span>
+              <span class="course">Atomic Physics</span>
+              <span class="course">Optics</span>
+              <span class="course">Electro-magnetism</span>
+              <span class="course">Programming Fundamentals</span>
+              <span class="course">Special Functions</span>
+              <span class="course">Modern Physics Exp. I &amp; II</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="transcript-preview reveal">
+        <h4><span class="italic">Selected</span> Transcript Highlights</h4>
+        <div class="tp-sub">Core physics coursework · grades of A &amp; A− only</div>
+        <div class="tp-grid">
+          <div class="tp-cell">
+            <span class="course-grade high">A</span>
+            <div class="course-name">Foundations of Quantum Information</div>
+            <div class="course-meta">3.0 credits · Fall 2025</div>
+          </div>
+          <div class="tp-cell">
+            <span class="course-grade high">A</span>
+            <div class="course-name">Optics</div>
+            <div class="course-meta">3.0 credits · Fall 2023</div>
+          </div>
+          <div class="tp-cell">
+            <span class="course-grade high">A</span>
+            <div class="course-name">Special Functions</div>
+            <div class="course-meta">2.0 credits · Spring 2025</div>
+          </div>
+          <div class="tp-cell">
+            <span class="course-grade high">A</span>
+            <div class="course-name">Fundamentals of Electric Circuits</div>
+            <div class="course-meta">3.5 credits · Spring 2024</div>
+          </div>
+          <div class="tp-cell">
+            <span class="course-grade high">A</span>
+            <div class="course-name">IYPT Physical Experiment &amp; Modeling</div>
+            <div class="course-meta">3.0 credits · Fall 2023</div>
+          </div>
+          <div class="tp-cell">
+            <span class="course-grade high">A</span>
+            <div class="course-name">Modern Physics Exp. II (Strengthening)</div>
+            <div class="course-meta">1.5 credits · Fall 2025</div>
+          </div>
+          <div class="tp-cell">
+            <span class="course-grade high">A</span>
+            <div class="course-name">Fundamental of Software Science &amp; Comp. Physics</div>
+            <div class="course-meta">3.0 credits · Spring 2025</div>
+          </div>
+          <div class="tp-cell">
+            <span class="course-grade high">A-</span>
+            <div class="course-name">Theoretical Mechanics</div>
+            <div class="course-meta">2.0 credits · Fall 2023</div>
+          </div>
+          <div class="tp-cell">
+            <span class="course-grade high">A-</span>
+            <div class="course-name">Physics Major Experiment</div>
+            <div class="course-meta">1.0 credits · Fall 2025</div>
+          </div>
+          <div class="tp-cell">
+            <span class="course-grade high">A-</span>
+            <div class="course-name">Modern Physics Exp. I (Strengthening)</div>
+            <div class="course-meta">1.5 credits · Spring 2025</div>
+          </div>
+          <div class="tp-cell">
+            <span class="course-grade high">A-</span>
+            <div class="course-name">Training of Research Ability 3</div>
+            <div class="course-meta">1.0 credits · Fall 2025</div>
+          </div>
+          <div class="tp-cell">
+            <span class="course-grade high">A-</span>
+            <div class="course-name">Fundamental Experiments of Physics (1)</div>
+            <div class="course-meta">2.0 credits · Spring 2024</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ HONORS ============ -->
+  <section class="view" id="view-honors">
+    <div class="container page">
+      <div class="page-header">
+        <div class="page-num anim-1">§ 03 / Honors</div>
+        <h2 class="page-title anim-2"><span class="italic">Honors</span><br/>&amp; Awards.</h2>
+      </div>
+
+      <div class="honors-grid">
+        <div class="honor reveal">
+          <span class="h-index">01</span>
+          <div class="h-year">2024 – 2025</div>
+          <div>
+            <h4><span class="italic">Gongneng</span> Scholarship</h4>
+            <div class="h-zh">公能奖学金 · 南开大学综合奖学金</div>
+          </div>
+          <div class="h-tags">
+            <span class="h-tag gold">Scholarship</span>
+            <span class="h-tag amount">¥ 5,000</span>
+          </div>
+        </div>
+
+        <div class="honor reveal d1">
+          <span class="h-index">02</span>
+          <div class="h-year">2025</div>
+          <div>
+            <h4><span class="italic">Outstanding</span> Student of Nankai University</h4>
+            <div class="h-zh">南开大学优秀学生 · 校级荣誉称号</div>
+          </div>
+          <div class="h-tags">
+            <span class="h-tag gold">University Honor</span>
+          </div>
+        </div>
+
+        <div class="honor reveal d2">
+          <span class="h-index">03</span>
+          <div class="h-year">2024</div>
+          <div>
+            <h4>CUPEC <span class="italic">National First Prize</span></h4>
+            <div class="h-zh">第十届全国大学生物理实验竞赛 · 全国一等奖</div>
+          </div>
+          <div class="h-tags">
+            <span class="h-tag gold">National First Prize</span>
+            <span class="h-tag">Tianjin Regional First</span>
+          </div>
+        </div>
+
+        <div class="honor reveal d3">
+          <span class="h-index">04</span>
+          <div class="h-year">2024</div>
+          <div>
+            <h4>NKPT · <span class="italic">First Prize</span> &amp; Best Opposition</h4>
+            <div class="h-zh">南开大学物理学术竞赛 · 一等奖 &amp; 最佳反方</div>
+          </div>
+          <div class="h-tags">
+            <span class="h-tag gold">First Prize</span>
+            <span class="h-tag">Best Opposition</span>
+          </div>
+        </div>
+
+        <div class="honor reveal">
+          <span class="h-index">05</span>
+          <div class="h-year">2024</div>
+          <div>
+            <h4><span class="italic">Cultural &amp;</span> Sports Scholarship</h4>
+            <div class="h-zh">南开大学文体奖学金</div>
+          </div>
+          <div class="h-tags">
+            <span class="h-tag gold">Scholarship</span>
+            <span class="h-tag amount">¥ 2,000</span>
+          </div>
+        </div>
+
+        <div class="honor reveal d1">
+          <span class="h-index">06</span>
+          <div class="h-year">2023</div>
+          <div>
+            <h4>Freshman Cup · <span class="italic">Champions</span></h4>
+            <div class="h-zh">南开大学足球新生杯 · 冠军</div>
+          </div>
+          <div class="h-tags">
+            <span class="h-tag gold">Champions</span>
+            <span class="h-tag">Football</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ SKILLS ============ -->
+  <section class="view" id="view-skills">
+    <div class="container page">
+      <div class="page-header">
+        <div class="page-num anim-1">§ 04 / Skills</div>
+        <h2 class="page-title anim-2"><span class="italic">Skills</span><br/>&amp; Toolkit.</h2>
+      </div>
+
+      <div class="skills-layout anim-3">
+        <div class="skill-block">
+          <div class="sk-num">01</div>
+          <h4>Research Interests</h4>
+          <ul>
+            <li>Quantum Information Theory</li>
+            <li>Bell Nonlocality</li>
+            <li>Quantum Mechanics</li>
+            <li>Linear Optical Networks</li>
+          </ul>
+        </div>
+
+        <div class="skill-block">
+          <div class="sk-num">02</div>
+          <h4>Research Methods</h4>
+          <ul>
+            <li>Numerical Optimization</li>
+            <li>Linear Algebraic Methods</li>
+            <li>Quantum Measurement Modeling</li>
+            <li>Signal Processing <span class="sub">circuits</span></li>
+          </ul>
+        </div>
+
+        <div class="skill-block">
+          <div class="sk-num">03</div>
+          <h4>Programming</h4>
+          <ul>
+            <li>Python <span class="sub">primary</span></li>
+            <li>MATLAB</li>
+            <li>C <span class="sub">basic</span></li>
+          </ul>
+        </div>
+
+        <div class="skill-block">
+          <div class="sk-num">04</div>
+          <h4>Tools &amp; Languages</h4>
+          <ul>
+            <li>LaTeX</li>
+            <li>Git</li>
+            <li>Origin</li>
+            <li>English <span class="sub">academic r &amp; w</span></li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section class="view" id="view-contact">
+    <div class="container page">
+      <div class="page-header">
+        <div class="page-num anim-1">§ 05 / Contact</div>
+        <h2 class="page-title anim-2"><span class="italic">Get in</span><br/>Touch.</h2>
+      </div>
+
+      <h3 class="contact-big anim-3">
+        <span class="italic">"Life</span> is like riding<br/>
+        <a href="mailto:2310297@mail.nankai.edu.cn">a bicycle. To keep<br/>your balance, you<br/>must keep moving."</a>
+      </h3>
+      <div class="quote-attr anim-3">
+        <span class="qa-dash">—</span>
+        <span class="qa-body">
+          <strong>Albert Einstein</strong>,
+          <em>letter to his son Eduard,</em>
+          5 February 1930
+        </span>
+      </div>
+
+      <div class="contact-grid anim-4">
+        <div class="contact-item">
+          <div class="c-label">E-mail</div>
+          <a href="mailto:2310297@mail.nankai.edu.cn" class="c-value">2310297@mail.<br/>nankai.edu.cn</a>
+        </div>
+        <div class="contact-item">
+          <div class="c-label">Phone</div>
+          <a href="tel:+8613367271220" class="c-value">+86 133 6727 1220</a>
+        </div>
+        <div class="contact-item">
+          <div class="c-label">GitHub</div>
+          <a href="https://github.com/Foley71047" target="_blank" rel="noopener" class="c-value">Foley71047</a>
+        </div>
+      </div>
+
+      <div class="contact-advisor anim-5">
+        <div class="ca-label">Academic Advisor</div>
+        <div class="ca-name">Prof. Yali Mao</div>
+        <div class="ca-role">毛亚丽 · School of Physics, Nankai University</div>
+      </div>
+
+      <footer>
+        <div class="ft-logo"><em>Leyuan Wang</em> — Portfolio © 2026</div>
+        <div>Handcrafted in Tianjin · School of Physics, Nankai University</div>
+      </footer>
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* ================ 视图切换 ================ */
+const navInd = document.getElementById('navInd');
+
+function setActive(name, push=true){
+  const current = document.querySelector('.view.active');
+  const next = document.getElementById('view-' + name);
+  if(!next || current === next){
+    if(push) history.replaceState({view: name}, '', '#' + name);
+    return;
+  }
+
+  current.classList.remove('active');
+  current.classList.add('leaving');
+
+  setTimeout(() => {
+    current.classList.remove('leaving');
+    next.classList.add('active');
+    void next.offsetWidth;
+    window.scrollTo({top:0, behavior:'instant'});
+    refreshReveal();
+  }, 320);
+
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.classList.toggle('active', a.dataset.nav === name);
+  });
+  moveIndicator(name);
+
+  if(push) history.pushState({view: name}, '', '#' + name);
+}
+
+function moveIndicator(name){
+  const active = document.querySelector(`.nav-links a[data-nav="${name}"]`);
+  if(!active || !navInd) return;
+  const parent = active.parentElement;
+  const pr = parent.getBoundingClientRect();
+  const ar = active.getBoundingClientRect();
+  navInd.style.width = ar.width + 'px';
+  navInd.style.transform = `translateX(${ar.left - pr.left}px)`;
+}
+
+document.querySelectorAll('[data-nav]').forEach(a => {
+  a.addEventListener('click', (e) => {
+    e.preventDefault();
+    setActive(a.dataset.nav);
+  });
+});
+
+window.addEventListener('popstate', () => {
+  const name = (location.hash || '#home').slice(1);
+  setActive(name, false);
+});
+
+window.addEventListener('load', () => {
+  const initialName = (location.hash || '#home').slice(1);
+  if(initialName !== 'home' && document.getElementById('view-' + initialName)){
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + initialName).classList.add('active');
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      a.classList.toggle('active', a.dataset.nav === initialName);
+    });
+  }
+  setTimeout(() => moveIndicator(initialName || 'home'), 80);
+});
+
+window.addEventListener('resize', () => {
+  const cur = document.querySelector('.nav-links a.active');
+  if(cur) moveIndicator(cur.dataset.nav);
+});
+
+/* ================ 滚动揭示 ================ */
+let io = null;
+function refreshReveal(){
+  if(io) io.disconnect();
+  io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, {threshold: 0.1, rootMargin: '0px 0px -40px 0px'});
+  document.querySelectorAll('.view.active .reveal').forEach(el => {
+    el.classList.remove('in');
+    io.observe(el);
+  });
+}
+refreshReveal();
+
+/* ================ 光标 ================ */
+const dot = document.getElementById('cDot');
+const ring = document.getElementById('cRing');
+let mx=0, my=0, rx=0, ry=0;
+window.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%,-50%)`;
+});
+function loop(){
+  rx += (mx - rx) * 0.15;
+  ry += (my - ry) * 0.15;
+  ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%,-50%)`;
+  requestAnimationFrame(loop);
+}
+loop();
+
+document.addEventListener('mouseover', (e) => {
+  if(e.target.closest('a, button, .portrait-frame, .project, .honor, .skill-block, .tp-cell')){
+    ring.classList.add('hover');
+  }
+});
+document.addEventListener('mouseout', (e) => {
+  if(e.target.closest('a, button, .portrait-frame, .project, .honor, .skill-block, .tp-cell')){
+    ring.classList.remove('hover');
+  }
+});
+
+/* ================ 进度条 ================ */
+const prog = document.getElementById('progress');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const scrolled = h.scrollTop / Math.max(1, (h.scrollHeight - h.clientHeight));
+  prog.style.width = (scrolled * 100) + '%';
+}, {passive:true});
+
+/* ================ 肖像视差 ================ */
+const portrait = document.getElementById('portrait');
+if(portrait){
+  window.addEventListener('mousemove', (e) => {
+    if(!document.getElementById('view-home').classList.contains('active')) return;
+    const rect = portrait.getBoundingClientRect();
+    const cx = rect.left + rect.width/2;
+    const cy = rect.top + rect.height/2;
+    const dx = (e.clientX - cx) / window.innerWidth;
+    const dy = (e.clientY - cy) / window.innerHeight;
+    portrait.style.transform = `perspective(1000px) rotateY(${-4 + dx*5}deg) rotateX(${2 - dy*5}deg)`;
+  });
+}
+</script>
+
+</body>
+</html>
