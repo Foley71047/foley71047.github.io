@@ -4,6 +4,15 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Leyuan Wang — 王乐圆 · Quantum Information</title>
+<meta name="description" content="王乐圆 Leyuan Wang — 南开大学物理学院强基计划本科生，研究方向为量子信息理论、Bell 非定域性与线性光学网络下的量子测量。" />
+<meta name="author" content="Leyuan Wang" />
+<meta name="theme-color" content="#0c0d12" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Leyuan Wang — 王乐圆 · Quantum Information" />
+<meta property="og:description" content="Undergraduate researcher in quantum information at Nankai University — Bell nonlocality &amp; linear-optical measurements." />
+<meta property="og:url" content="https://foley71047.github.io/" />
+<meta property="og:image" content="https://foley71047.github.io/portrait_web.jpg" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230c0d12' stroke='%23e8a15f' stroke-width='3'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-family='Georgia,serif' font-style='italic' font-size='32' fill='%23e8a15f'%3E%CF%88%3C/text%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@300;400;500&family=Noto+Serif+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -152,10 +161,16 @@ body::before{
 }
 
 @media (max-width: 820px){
-  .nav{ width: 94%; padding: 12px 18px; }
-  .nav-links{ gap: 0; }
-  .nav-links a{ padding: 8px 10px; font-size: 10px; letter-spacing: .1em; }
+  .nav{ width: 94%; padding: 12px 18px; gap: 12px; }
+  .nav-links{ gap: 0; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+  .nav-links::-webkit-scrollbar{ display: none; }
+  .nav-links a{ padding: 8px 10px; font-size: 10px; letter-spacing: .1em; white-space: nowrap; }
   .nav-logo em{ display: none; }
+}
+@media (max-width: 560px){
+  .nav{ padding: 8px; }
+  .nav-logo{ display: none; }
+  .nav-links a{ padding: 8px 9px; letter-spacing: .06em; }
 }
 
 /* ======== 视图切换 ======== */
@@ -764,13 +779,13 @@ body::before{
 /* ======== HONORS ======== */
 .honors-grid{
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 0;
   border-top: 1px solid var(--rule);
   border-left: 1px solid var(--rule);
 }
 .honor{
-  padding: 52px 40px;
+  padding: 48px 32px;
   border-right: 1px solid var(--rule);
   border-bottom: 1px solid var(--rule);
   position: relative;
@@ -800,7 +815,7 @@ body::before{
 .honor h4{
   font-family: var(--f-display);
   font-weight: 400;
-  font-size: 28px;
+  font-size: 26px;
   line-height: 1.2;
   letter-spacing: -0.015em;
   color: var(--ink);
@@ -849,7 +864,7 @@ body::before{
   color: var(--muted);
   opacity: .5;
 }
-@media (max-width: 960px){
+@media (max-width: 1180px){
   .honors-grid{ grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 720px){
@@ -989,7 +1004,7 @@ body::before{
 
 .contact-grid{
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 0;
   border-top: 1px solid var(--rule);
   margin-top: 60px;
@@ -1109,6 +1124,12 @@ footer .ft-logo{
   z-index: 100;
   transition: width .1s;
 }
+
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{ animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  html{ scroll-behavior: auto; }
+  .reveal{ opacity: 1; transform: none; }
+}
 </style>
 </head>
 <body>
@@ -1194,7 +1215,7 @@ footer .ft-logo{
               <span class="v">N°01</span>
             </div>
             <figure class="portrait-frame" id="portrait">
-              <img src="portrait_web.jpg" alt="Leyuan Wang portrait" />
+              <img src="portrait_web.jpg" alt="Leyuan Wang portrait" fetchpriority="high" decoding="async" />
             </figure>
             <div class="portrait-label br">
               Physics · Quantum Info
@@ -1376,7 +1397,7 @@ footer .ft-logo{
           </div>
           <div class="edu-item">
             <span class="lbl">GPA</span>
-            <span class="val big">3.443<small> / 4.00</small></span>
+            <span class="val big">3.484<small> / 4.00</small></span>
           </div>
           <div class="edu-item">
             <span class="lbl">Advisor</span>
@@ -1384,7 +1405,7 @@ footer .ft-logo{
           </div>
           <div class="edu-item">
             <span class="lbl">Credits</span>
-            <span class="val">133.0 <small style="color:var(--muted);font-family:var(--f-mono);font-size:11px;">· earned as of 2026 · ongoing</small></span>
+            <span class="val">144.5 <small style="color:var(--muted);font-family:var(--f-mono);font-size:11px;">· earned as of 2026 · ongoing</small></span>
           </div>
           <div class="edu-item">
             <span class="lbl">Coursework</span>
@@ -1487,6 +1508,44 @@ footer .ft-logo{
       <div class="honors-grid">
         <div class="honor reveal">
           <span class="h-index">01</span>
+          <div class="h-year">2026</div>
+          <div>
+            <h4><span class="italic">Fundamental Disciplines</span> Program Scholarship</h4>
+            <div class="h-zh">强基计划奖学金</div>
+          </div>
+          <div class="h-tags">
+            <span class="h-tag gold">Scholarship</span>
+            <span class="h-tag amount">¥ 5,000</span>
+          </div>
+        </div>
+
+        <div class="honor reveal d1">
+          <span class="h-index">02</span>
+          <div class="h-year">2026</div>
+          <div>
+            <h4><span class="italic">Academic Excellence</span> Scholarship</h4>
+            <div class="h-zh">学业优秀奖学金</div>
+          </div>
+          <div class="h-tags">
+            <span class="h-tag gold">Scholarship</span>
+            <span class="h-tag amount">¥ 2,000</span>
+          </div>
+        </div>
+
+        <div class="honor reveal d2">
+          <span class="h-index">03</span>
+          <div class="h-year">2025</div>
+          <div>
+            <h4><span class="italic">Merit Student</span> of Nankai University</h4>
+            <div class="h-zh">南开大学三好学生 · 校级荣誉称号</div>
+          </div>
+          <div class="h-tags">
+            <span class="h-tag gold">University Honor</span>
+          </div>
+        </div>
+
+        <div class="honor reveal d3">
+          <span class="h-index">04</span>
           <div class="h-year">2024 – 2025</div>
           <div>
             <h4><span class="italic">Gongneng</span> Scholarship</h4>
@@ -1498,20 +1557,8 @@ footer .ft-logo{
           </div>
         </div>
 
-        <div class="honor reveal d1">
-          <span class="h-index">02</span>
-          <div class="h-year">2025</div>
-          <div>
-            <h4><span class="italic">Outstanding</span> Student of Nankai University</h4>
-            <div class="h-zh">南开大学优秀学生 · 校级荣誉称号</div>
-          </div>
-          <div class="h-tags">
-            <span class="h-tag gold">University Honor</span>
-          </div>
-        </div>
-
-        <div class="honor reveal d2">
-          <span class="h-index">03</span>
+        <div class="honor reveal">
+          <span class="h-index">05</span>
           <div class="h-year">2024</div>
           <div>
             <h4>CUPEC <span class="italic">National First Prize</span></h4>
@@ -1523,8 +1570,8 @@ footer .ft-logo{
           </div>
         </div>
 
-        <div class="honor reveal d3">
-          <span class="h-index">04</span>
+        <div class="honor reveal d1">
+          <span class="h-index">06</span>
           <div class="h-year">2024</div>
           <div>
             <h4>NKPT · <span class="italic">First Prize</span> &amp; Best Opposition</h4>
@@ -1536,8 +1583,8 @@ footer .ft-logo{
           </div>
         </div>
 
-        <div class="honor reveal">
-          <span class="h-index">05</span>
+        <div class="honor reveal d2">
+          <span class="h-index">07</span>
           <div class="h-year">2024</div>
           <div>
             <h4><span class="italic">Cultural &amp;</span> Sports Scholarship</h4>
@@ -1549,8 +1596,8 @@ footer .ft-logo{
           </div>
         </div>
 
-        <div class="honor reveal d1">
-          <span class="h-index">06</span>
+        <div class="honor reveal d3">
+          <span class="h-index">08</span>
           <div class="h-year">2023</div>
           <div>
             <h4>Freshman Cup · <span class="italic">Champions</span></h4>
@@ -1561,6 +1608,7 @@ footer .ft-logo{
             <span class="h-tag">Football</span>
           </div>
         </div>
+
       </div>
 
     </div>
@@ -1577,44 +1625,23 @@ footer .ft-logo{
       <div class="skills-layout anim-3">
         <div class="skill-block">
           <div class="sk-num">01</div>
-          <h4>Research Interests</h4>
+          <h4>Research Methods</h4>
           <ul>
-            <li>Quantum Information Theory</li>
-            <li>Bell Nonlocality</li>
-            <li>Quantum Mechanics</li>
-            <li>Linear Optical Networks</li>
+            <li>Numerical Optimization <span class="sub">python</span></li>
+            <li>Linear Algebraic Methods</li>
+            <li>Quantum Measurement Modeling</li>
+            <li>Signal Acquisition Circuits</li>
           </ul>
         </div>
 
         <div class="skill-block">
           <div class="sk-num">02</div>
-          <h4>Research Methods</h4>
-          <ul>
-            <li>Numerical Optimization</li>
-            <li>Linear Algebraic Methods</li>
-            <li>Quantum Measurement Modeling</li>
-            <li>Signal Processing <span class="sub">circuits</span></li>
-          </ul>
-        </div>
-
-        <div class="skill-block">
-          <div class="sk-num">03</div>
-          <h4>Programming</h4>
-          <ul>
-            <li>Python <span class="sub">primary</span></li>
-            <li>MATLAB</li>
-            <li>C <span class="sub">basic</span></li>
-          </ul>
-        </div>
-
-        <div class="skill-block">
-          <div class="sk-num">04</div>
           <h4>Tools &amp; Languages</h4>
           <ul>
+            <li>Python</li>
             <li>LaTeX</li>
-            <li>Git</li>
-            <li>Origin</li>
             <li>English <span class="sub">academic r &amp; w</span></li>
+            <li title="这个网站就是我们一起做的。">Effective Communication with Claude <span class="sub">fluent · daily</span></li>
           </ul>
         </div>
       </div>
@@ -1646,11 +1673,7 @@ footer .ft-logo{
       <div class="contact-grid anim-4">
         <div class="contact-item">
           <div class="c-label">E-mail</div>
-          <a href="mailto:2310297@mail.nankai.edu.cn" class="c-value">2310297@mail.<br/>nankai.edu.cn</a>
-        </div>
-        <div class="contact-item">
-          <div class="c-label">Phone</div>
-          <a href="tel:+8613367271220" class="c-value">+86 133 6727 1220</a>
+          <a href="mailto:2310297@mail.nankai.edu.cn" class="c-value">2310297@mail.nankai.edu.cn</a>
         </div>
         <div class="contact-item">
           <div class="c-label">GitHub</div>
@@ -1707,11 +1730,12 @@ function setActive(name, push=true){
 function moveIndicator(name){
   const active = document.querySelector(`.nav-links a[data-nav="${name}"]`);
   if(!active || !navInd) return;
-  const parent = active.parentElement;
-  const pr = parent.getBoundingClientRect();
-  const ar = active.getBoundingClientRect();
-  navInd.style.width = ar.width + 'px';
-  navInd.style.transform = `translateX(${ar.left - pr.left}px)`;
+  navInd.style.width = active.offsetWidth + 'px';
+  navInd.style.transform = `translateX(${active.offsetLeft}px)`;
+  const bar = active.parentElement;
+  if(bar.scrollWidth > bar.clientWidth){
+    bar.scrollTo({left: active.offsetLeft - (bar.clientWidth - active.offsetWidth) / 2, behavior: 'smooth'});
+  }
 }
 
 document.querySelectorAll('[data-nav]').forEach(a => {
@@ -1734,6 +1758,7 @@ window.addEventListener('load', () => {
     document.querySelectorAll('.nav-links a').forEach(a => {
       a.classList.toggle('active', a.dataset.nav === initialName);
     });
+    refreshReveal();
   }
   setTimeout(() => moveIndicator(initialName || 'home'), 80);
 });
